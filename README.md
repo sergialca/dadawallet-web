@@ -4,16 +4,23 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 This project uses [pnpm](https://pnpm.io) as the only package manager.
 
+Copy `.env.example` to `.env.local` and set Privy credentials from the [Privy Dashboard](https://dashboard.privy.io):
+
+```bash
+NEXT_PUBLIC_PRIVY_APP_ID=
+NEXT_PUBLIC_PRIVY_CLIENT_ID=
+PRIVY_APP_SECRET=
+PRIVY_JWT_VERIFICATION_KEY=
+```
+
+Use a **development** Privy app ID for localhost so the SDK can set `privy-token` cookies. Enable email OTP in the dashboard.
+
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000). Unauthenticated users land on `/login`. After email OTP, they are redirected to `/dashboard`.
 
 ## Learn More
 
