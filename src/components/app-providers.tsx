@@ -9,7 +9,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   const clientId = getPrivyClientId();
 
   if (!appId) {
-    return <>{children}</>;
+    return <div className="flex h-full min-h-0 flex-1 flex-col">{children}</div>;
   }
 
   return (
@@ -30,7 +30,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {children}
+      <div className="flex h-full min-h-0 flex-1 flex-col">{children}</div>
     </PrivyProvider>
   );
 }
