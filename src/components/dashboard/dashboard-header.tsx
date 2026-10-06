@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { HexLogo } from "@/components/hex-logo";
-import { getWalletAddress, shortenAddress } from "@/lib/wallet-address";
+import { useSolanaWallet } from "@/hooks/use-solana-wallet";
+import { shortenAddress } from "@/lib/wallet-address";
 
 export function DashboardHeader() {
   const { user, logout } = usePrivy();
+  const { address } = useSolanaWallet();
   const router = useRouter();
   const [copied, setCopied] = useState(false);
-  const address = getWalletAddress(user);
 
   async function onCopy() {
     if (!address) {

@@ -1,5 +1,3 @@
-import type { PreviewHolding } from "@/lib/preview-holdings";
-
 function IconShell({
   children,
   className,
@@ -16,7 +14,7 @@ function IconShell({
   );
 }
 
-export function AssetIcon({ symbol }: { symbol: PreviewHolding["symbol"] }) {
+export function AssetIcon({ symbol }: { symbol: string }) {
   if (symbol === "SOL") {
     return (
       <IconShell className="bg-[#0b1220]">
@@ -52,10 +50,10 @@ export function AssetIcon({ symbol }: { symbol: PreviewHolding["symbol"] }) {
     );
   }
 
-  if (symbol === "BTC") {
+  if (symbol === "EURC") {
     return (
-      <IconShell className="bg-[#2a1c08]">
-        <span className="text-sm font-semibold text-[#f7931a]">₿</span>
+      <IconShell className="bg-[#0a1c3a]">
+        <span className="text-sm font-semibold text-[#4ea8de]">€</span>
       </IconShell>
     );
   }

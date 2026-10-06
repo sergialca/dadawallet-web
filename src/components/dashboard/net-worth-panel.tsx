@@ -1,16 +1,30 @@
+"use client";
+
 import { AssetIcon } from "@/components/dashboard/asset-icon";
-import { PREVIEW_HOLDINGS } from "@/lib/preview-holdings";
+import { useWalletHoldings } from "@/hooks/use-wallet-holdings";
+
+function formatNetWorth(value: number | null) {
+  if (value == null) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(value);
+}
 
 export function NetWorthPanel() {
+  const holdings = useWalletHoldings();
+
   return (
     <aside className="flex max-h-[70vh] min-h-0 w-full flex-col gap-5 overflow-y-auto overscroll-contain border-t border-outline-variant bg-surface-container-low p-5 rail:h-full rail:max-h-none rail:w-[360px] rail:shrink-0 rail:border-t-0 rail:border-l-2 rail:border-l-primary-container">
       <div>
         <div className="flex items-start justify-between gap-3">
           <p className="label-caps text-on-surface-variant">Unified net worth</p>
-          <p className="data-sm text-primary-container">+8.42% 24h</p>
         </div>
         <p className="mt-2 font-mono text-[34px] font-medium leading-10 tracking-tight text-on-surface">
-          $482,910.45
+          {holdings.status === "ready" ? formatNetWorth(holdings.data.netWorthUsd) : "—"}
         </p>
       </div>
 
@@ -47,28 +61,32 @@ export function NetWorthPanel() {
 
       <div>
         <p className="label-caps mb-3 text-on-surface-variant">Live holdings</p>
-        <ul className="flex flex-col gap-2">
-          {PREVIEW_HOLDINGS.map((holding) => (
-            <li
-              key={holding.symbol}
-              className="flex items-center justify-between gap-3 rounded-lg border border-outline-variant bg-surface-container px-3 py-3"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <AssetIcon symbol={holding.symbol} />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-on-surface">{holding.name}</p>
-                  <p className="data-sm text-on-surface-variant">{holding.ticker}</p>
+        {holdings.status === "error" ? (
+          <p className="text-sm text-on-surface-variant">{holdings.message}</p>
+        ) : holdings.status === "ready" ? (
+          <ul className="flex flex-col gap-2">
+            {holdings.data.holdings.map((holding) => (
+              <li
+                key={holding.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-outline-variant bg-surface-container px-3 py-3"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <AssetIcon symbol={holding.symbol} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-on-surface">{holding.name}</p>
+                    <p className="data-sm text-on-surface-variant">{holding.symbol}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <p className="data-lg text-on-surface">{holding.amount}</p>
-                <p className="data-sm mt-0.5 text-on-surface-variant">
-                  {holding.usdValue ?? "—"}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className="text-right">
+                  <p className="data-lg text-on-surface">{holding.amount}</p>
+                  <p className="data-sm mt-0.5 text-on-surface-variant">{holding.usdValue ?? "—"}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-on-surface-variant">Loading holdings</p>
+        )}
       </div>
     </aside>
   );
