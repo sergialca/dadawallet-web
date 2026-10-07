@@ -60,6 +60,31 @@ export async function getSolanaBalanceLamports(address: string) {
   return result.value;
 }
 
+export async function getSplTokenBalance(owner: string, mint: string) {
+  const result = await solanaRpc<{ value: ParsedTokenAccount[] }>("getTokenAccountsByOwner", [
+    owner,
+    { mint },
+    { encoding: "jsonParsed" },
+  ]);
+
+  let raw = BigInt(0);
+  let decimals = 6;
+
+  for (const account of result.value) {
+    const tokenAmount = account.account.data.parsed?.info?.tokenAmount;
+    if (!tokenAmount?.amount) {
+      continue;
+    }
+
+    raw += BigInt(tokenAmount.amount);
+    if (typeof tokenAmount.decimals === "number") {
+      decimals = tokenAmount.decimals;
+    }
+  }
+
+  return { decimals, mint, raw };
+}
+
 async function getTokenAccountsForProgram(owner: string, programId: string) {
   const result = await solanaRpc<{ value: ParsedTokenAccount[] }>("getTokenAccountsByOwner", [
     owner,
