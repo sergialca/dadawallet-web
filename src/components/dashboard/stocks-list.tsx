@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { listedStocks } from "@/constants/stocks";
+import { useFavoriteTickers } from "@/hooks/use-favorite-tickers";
 import {
   ALPHABET,
   filterStocks,
@@ -12,7 +14,7 @@ import {
 } from "@/lib/stock-list";
 import type { StockAsset } from "@/types/stocks";
 
-const LIST_FILTERS: { id: StockListFilter; label: string }[] = [
+const LIST_FILTERS: { id: Exclude<StockListFilter, "favorites">; label: string }[] = [
   { id: "all", label: "All" },
   { id: "stock", label: "Stocks" },
   { id: "pre-IPO stock", label: "Pre-IPO" },
@@ -49,11 +51,12 @@ function scrollToLetter(letter: string) {
 export function StocksList() {
   const [query, setQuery] = useState("");
   const [listFilter, setListFilter] = useState<StockListFilter>("all");
+  const { error: favoritesError, isLoading: favoritesLoading, tickerSet } = useFavoriteTickers();
 
   const sections = useMemo(() => {
-    const visible = filterStocksByKind(listedStocks, listFilter);
+    const visible = filterStocksByKind(listedStocks, listFilter, tickerSet);
     return groupStocksByNameLetter(filterStocks(visible, query));
-  }, [listFilter, query]);
+  }, [listFilter, query, tickerSet]);
 
   const populatedLetters = useMemo(
     () => new Set(sections.map((section) => section.title)),
@@ -82,7 +85,7 @@ export function StocksList() {
         />
       </label>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {LIST_FILTERS.map((filter) => {
           const selected = listFilter === filter.id;
           return (
@@ -103,12 +106,33 @@ export function StocksList() {
             </button>
           );
         })}
+        <button
+          aria-label="Favorites"
+          aria-pressed={listFilter === "favorites"}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-lg ${
+            listFilter === "favorites"
+              ? "border-primary-container bg-primary-container text-on-primary"
+              : "border-outline-variant text-on-surface-variant hover:text-on-surface"
+          }`}
+          onClick={() => setListFilter("favorites")}
+          type="button"
+        >
+          <span aria-hidden="true">{listFilter === "favorites" ? "★" : "☆"}</span>
+        </button>
       </div>
 
       <div className="relative flex gap-3 md:gap-5">
         <div className="min-w-0 flex-1 pr-5">
-          {sections.length === 0 ? (
-            <p className="pt-4 text-sm text-on-surface-variant">No matching stocks</p>
+          {listFilter === "favorites" && favoritesLoading ? (
+            <p className="pt-4 text-sm text-on-surface-variant">Loading favorites…</p>
+          ) : listFilter === "favorites" && favoritesError ? (
+            <p className="pt-4 text-sm text-error">{favoritesError.message}</p>
+          ) : sections.length === 0 ? (
+            <p className="pt-4 text-sm text-on-surface-variant">
+              {listFilter === "favorites" && !query.trim()
+                ? "No favorite stocks yet. Star a stock on its buy/sell page."
+                : "No matching stocks"}
+            </p>
           ) : (
             <div className="flex flex-col gap-5">
               {sections.map((section) => (
@@ -122,17 +146,19 @@ export function StocksList() {
                   </h2>
                   <ul className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                     {section.data.map((stock) => (
-                      <li
-                        className="flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-container px-4 py-3"
-                        key={stock.id}
-                      >
-                        <StockLogo stock={stock} />
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-on-surface md:text-base">
-                            {stock.name}
-                          </p>
-                          <p className="data-sm text-on-surface-variant">{stock.ticker}</p>
-                        </div>
+                      <li key={stock.id}>
+                        <Link
+                          className="flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-container px-4 py-3 neon-bloom"
+                          href={`/dashboard/stocks/${stock.id}`}
+                        >
+                          <StockLogo stock={stock} />
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-on-surface md:text-base">
+                              {stock.name}
+                            </p>
+                            <p className="data-sm text-on-surface-variant">{stock.ticker}</p>
+                          </div>
+                        </Link>
                       </li>
                     ))}
                   </ul>

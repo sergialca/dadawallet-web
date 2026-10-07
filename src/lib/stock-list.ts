@@ -1,6 +1,6 @@
 import type { StockAsset, StockKind } from "@/types/stocks";
 
-export type StockListFilter = "all" | StockKind;
+export type StockListFilter = "all" | "favorites" | StockKind;
 
 export const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
@@ -23,9 +23,17 @@ export function filterStocks(stocks: StockAsset[], query: string): StockAsset[] 
   );
 }
 
-export function filterStocksByKind(stocks: StockAsset[], filter: StockListFilter): StockAsset[] {
+export function filterStocksByKind(
+  stocks: StockAsset[],
+  filter: StockListFilter,
+  favoriteTickers: ReadonlySet<string> = new Set(),
+): StockAsset[] {
   if (filter === "all") {
     return stocks;
+  }
+
+  if (filter === "favorites") {
+    return stocks.filter((stock) => favoriteTickers.has(stock.ticker.trim().toUpperCase()));
   }
 
   return stocks.filter((stock) => stock.kind === filter);
