@@ -1,5 +1,7 @@
 import { PrivyClient } from "@privy-io/node";
 
+import { getWalletAddress } from "@/lib/wallet-address";
+
 let privyClient: PrivyClient | null = null;
 
 export function getPrivyServerClient() {
@@ -36,4 +38,40 @@ export async function verifyPrivyAccessToken(accessToken: string) {
   } catch {
     return false;
   }
+}
+
+export function getAccessTokenFromRequest(request: Request) {
+  const authorization = request.headers.get("authorization");
+  if (authorization?.toLowerCase().startsWith("bearer ")) {
+    const token = authorization.slice(7).trim();
+    if (token) {
+      return token;
+    }
+  }
+
+  const cookieHeader = request.headers.get("cookie");
+  if (!cookieHeader) {
+    return null;
+  }
+
+  for (const part of cookieHeader.split(";")) {
+    const [name, ...rest] = part.trim().split("=");
+    if (name === "privy-token") {
+      const value = rest.join("=").trim();
+      return value.length > 0 ? decodeURIComponent(value) : null;
+    }
+  }
+
+  return null;
+}
+
+export async function getSolanaWalletAddressFromAccessToken(accessToken: string) {
+  const client = getPrivyServerClient();
+  if (!client) {
+    throw new Error("Privy is not configured.");
+  }
+
+  const verified = await client.utils().auth().verifyAccessToken(accessToken);
+  const user = await client.users()._get(verified.user_id);
+  return getWalletAddress(user);
 }

@@ -22,6 +22,8 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000). Unauthenticated users land on `/login`. After email OTP, they are redirected to `/dashboard`.
 
+Agents can call the Streamable HTTP MCP endpoint at `http://localhost:3000/mcp` (or `https://<host>/mcp`). Cursor is already wired to it via `.cursor/mcp.json` while `pnpm dev` is running. Catalog and price tools are public. Wallet status and balance-aware trade advice need `Authorization: Bearer <privy-token>`. `prepare_trade` returns a review URL such as `/dashboard/stocks/aapl-ondo?side=buy&amount=10`; it does not send a transaction.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

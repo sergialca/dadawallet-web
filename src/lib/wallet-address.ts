@@ -12,6 +12,7 @@ type PrivyUserLike = {
     chain_type?: string;
   } | null;
   linkedAccounts?: LinkedAccount[] | null;
+  linked_accounts?: LinkedAccount[] | null;
 };
 
 function isSolanaAccount(account: {
@@ -26,7 +27,7 @@ function isSolanaAccount(account: {
 }
 
 export function getWalletAddress(user: PrivyUserLike | null | undefined) {
-  const accounts = user?.linkedAccounts ?? [];
+  const accounts = user?.linkedAccounts ?? user?.linked_accounts ?? [];
   const solana = accounts.find(
     (account) => account.type === "wallet" && isSolanaAccount(account),
   );
