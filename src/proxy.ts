@@ -32,7 +32,7 @@ async function hasValidAccessToken(request: NextRequest) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (hasOauthParams(request) || pathname === REFRESH_PATH) {
+  if (hasOauthParams(request) || pathname === REFRESH_PATH || pathname === "/mcp") {
     return NextResponse.next();
   }
 

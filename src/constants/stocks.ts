@@ -244,6 +244,15 @@ export function getStockById(stockId: string) {
   return listedStocks.find((stock) => stock.id === stockId) ?? null;
 }
 
+export function getStockByTicker(ticker: string) {
+  const needle = ticker.trim().toUpperCase();
+  if (!needle) {
+    return null;
+  }
+
+  return listedStocks.find((stock) => stock.ticker.toUpperCase() === needle) ?? null;
+}
+
 export function getStockByMint(mint: string) {
   if (!mint) {
     return null;
