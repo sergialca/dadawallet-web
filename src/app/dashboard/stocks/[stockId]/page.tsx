@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 import { BuySellTicket } from "@/components/dashboard/buy-sell-ticket";
 import { getStockById } from "@/constants/stocks";
@@ -15,5 +16,9 @@ export default async function StockTradePage({
     notFound();
   }
 
-  return <BuySellTicket stock={stock} />;
+  return (
+    <Suspense>
+      <BuySellTicket stock={stock} />
+    </Suspense>
+  );
 }

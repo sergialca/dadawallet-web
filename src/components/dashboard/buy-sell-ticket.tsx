@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MinimumOrderUsdc, type OndoQuoteSide } from "@/constants/ondo";
@@ -91,9 +92,16 @@ function StockLogo({ stock }: { stock: StockAsset }) {
   );
 }
 
+function sideFromSearch(value: string | null): OndoQuoteSide {
+  return value === "sell" ? "sell" : "buy";
+}
+
 export function BuySellTicket({ stock }: { stock: StockAsset }) {
-  const [side, setSide] = useState<OndoQuoteSide>("buy");
-  const [amountInput, setAmountInput] = useState("");
+  const searchParams = useSearchParams();
+  const [side, setSide] = useState<OndoQuoteSide>(() => sideFromSearch(searchParams.get("side")));
+  const [amountInput, setAmountInput] = useState(() =>
+    sanitizePositiveDecimalInput(searchParams.get("amount") ?? ""),
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [completedMessage, setCompletedMessage] = useState<string | null>(null);
