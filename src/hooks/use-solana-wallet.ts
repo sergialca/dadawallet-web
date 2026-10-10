@@ -37,6 +37,6 @@ export function useSolanaWallet() {
   return {
     address,
     error: address ? null : error,
-    isLoading: !ready || (authenticated && !address && !error),
+    isLoading: !address && (!ready || (authenticated && !error)),
   };
 }

@@ -39,12 +39,13 @@ export function getSolanaRpcUrl() {
   );
 }
 
-export async function solanaRpc<T>(method: string, params: unknown[] = []) {
+export async function solanaRpc<T>(method: string, params: unknown[] = [], signal?: AbortSignal) {
   const response = await fetch(getSolanaRpcUrl(), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
     cache: "no-store",
+    signal,
   });
 
   const payload = (await response.json()) as SolanaRpcResponse<T>;
