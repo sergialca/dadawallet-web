@@ -79,9 +79,9 @@ function accountPubkey(key: ParsedAccountKey | undefined) {
 }
 
 function formatRaw(raw: bigint, decimals: number) {
-  const negative = raw < 0n;
+  const negative = raw < BigInt(0);
   const absolute = negative ? -raw : raw;
-  const scale = decimals > 0 ? 10n ** BigInt(decimals) : 1n;
+  const scale = decimals > 0 ? BigInt(10) ** BigInt(decimals) : BigInt(1);
   const whole = (absolute / scale).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   const fraction =
     decimals > 0 ? (absolute % scale).toString().padStart(decimals, "0").replace(/0+$/, "") : "";
@@ -129,13 +129,13 @@ function tokenTotals(balances: TokenBalance[] | undefined, owner: string) {
 }
 
 function pushChange(changes: ActivityChange[], raw: bigint, asset: Omit<ActivityChange, "amount" | "direction"> & { decimals: number }) {
-  if (raw === 0n) {
+  if (raw === BigInt(0)) {
     return;
   }
 
   changes.push({
-    amount: formatRaw(raw < 0n ? -raw : raw, asset.decimals),
-    direction: raw > 0n ? "in" : "out",
+    amount: formatRaw(raw < BigInt(0) ? -raw : raw, asset.decimals),
+    direction: raw > BigInt(0) ? "in" : "out",
     mint: asset.mint,
     name: asset.name,
     symbol: asset.symbol,
@@ -179,7 +179,7 @@ export function transactionsToActivity(owner: string, transactions: AddressTrans
       const previous = before.get(mint);
       const next = after.get(mint);
       const decimals = next?.decimals ?? previous?.decimals ?? 0;
-      const delta = (next?.raw ?? 0n) - (previous?.raw ?? 0n);
+      const delta = (next?.raw ?? BigInt(0)) - (previous?.raw ?? BigInt(0));
       const asset = describeMint(mint);
       pushChange(changes, delta, { ...asset, decimals });
     }
