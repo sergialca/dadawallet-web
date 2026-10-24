@@ -1,4 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# dadawallet
+
+## About
+
+dadawallet is a non-custodial Solana web wallet and asset exchange. Users sign in with email OTP, hold a Solana wallet they control, and buy or sell tokenized stocks settled in USDC.
+
+The app is a [Next.js](https://nextjs.org) App Router project. [Privy](https://www.privy.io) handles identity and the embedded Solana wallet, so the app never custodies keys. Stock quotes and orders come from [Ondo Global Markets](https://ondo.finance). Balances, net worth, and recent activity are read from Solana. A buy or sell is prepared as a quote and a review screen; the user confirms it in the wallet before anything is sent.
+
+What it includes:
+
+- **Login and signup** with Privy email OTP. Unauthenticated visitors land on `/login` and continue to `/dashboard` after they verify.
+- **Dashboard** with unified net worth, SOL, stablecoin, and catalog-token holdings.
+- **Stock catalog** of Ondo tokenized equities (for example AAPL, MSFT, NVDA), each with a buy/sell ticket and a live USDC quote.
+- **Activity** for recent Solana transfers on the connected wallet.
+- **Agent access** through a Streamable HTTP MCP endpoint at `/mcp`. Catalog and price tools are public. Wallet status and balance-aware trade advice require a Privy token. `prepare_trade` returns a review URL and does not send a transaction.
+
+## Promotional video
+
+[video](https://www.youtube.com/watch?v=3U56O1c-NE8)
 
 ## Getting Started
 
@@ -38,5 +56,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-[Promotional video](https://youtu.be/lyLAUitqcOc)
